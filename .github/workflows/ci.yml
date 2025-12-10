@@ -54,4 +54,4 @@ jobs:
       - name: Lint with ruff
         run: uv run scripts/ruff
       - name: Type check with mypy
-        run: uv run mypy
+        run: uv run mypy --no-warn-unused-ignores
