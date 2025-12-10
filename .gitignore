@@ -1,0 +1,12 @@
+# virtual environments
+.tox/
+.venv/
+
+# byte-compiled / optimized files
+__pycache__/
+
+# lockfile
+uv.lock
+
+# test coverage data
+.coverage

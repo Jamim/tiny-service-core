@@ -1,0 +1,9 @@
+#!/bin/bash
+
+set -ex
+
+ruff check src
+ruff check tests \
+    --config 'lint.isort.known-first-party = ["core"]' \
+    --config 'lint.isort.known-local-folder = ["tests"]'
+ruff format --check
