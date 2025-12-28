@@ -3,7 +3,7 @@ name = "tiny-service-core"
 description = "🪐 Shared functionality for tiny microservices"
 
 # https://github.com/astral-sh/uv/issues/11718
-version = "0.1.0"
+version = "0.1.1"
 
 readme = "README.md"
 license = { text = "MIT" }
