@@ -64,6 +64,9 @@ http-client = [
     "httpx",
     "sentry-sdk[httpx]",
 ]
+multipart = [
+    "python-multipart",
+]
 
 [dependency-groups]
 lint = [
