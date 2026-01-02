@@ -1,9 +1,11 @@
 from .auth import AppClientKey as Token
 from .auth import VerifyClient
+from .user_ip import UserIP
 
 __all__ = [
     'Token',
     'VerifyClient',
+    'UserIP',
 ]
 
 try:

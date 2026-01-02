@@ -9,9 +9,17 @@ from redis.asyncio.client import Redis
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 from core import make_app
-from core.deps import Cache, HTTPClient, Session, Token
+from core.deps import Cache, HTTPClient, Session, Token, UserIP
 
 AUTH_HEADERS = {'Authorization': 'Bearer 42'}
+
+
+def _test_api(url, headers, status_code, json):
+    app = make_app()
+    with TestClient(app) as client:
+        response = client.get(url, headers=headers)
+        assert response.status_code == status_code
+        assert response.json() == json
 
 
 def get_status():
@@ -43,13 +51,7 @@ def test_verify_client(settings, api, headers, status_code, json):
         'cf01c9d9de8cf1433d212adb97be45ecfc0fd868599faf3ee4741a5e959d424e'
     ]
     api.add_internal_api = add_api_factory(get_status)
-
-    app = make_app()
-    client = TestClient(app)
-
-    response = client.get('/internal/core/status', headers=headers)
-    assert response.status_code == status_code
-    assert response.json() == json
+    _test_api('/internal/core/status', headers, status_code, json)
 
 
 @patch.dict(
@@ -74,6 +76,7 @@ def test_deps_init_no_optional():
     assert deps.__all__ == [
         'Token',
         'VerifyClient',
+        'UserIP',
     ]
 
     assert not hasattr(deps, 'Cache')
@@ -101,6 +104,11 @@ def get_http_client(http_client: HTTPClient):
     return 'ok'
 
 
+def get_user_ip(user_ip: UserIP):
+    assert user_ip == '1.1.1.1'
+    return 'ok'
+
+
 @pytest.mark.parametrize(
     'endpoint',
     (
@@ -112,9 +120,18 @@ def get_http_client(http_client: HTTPClient):
 )
 def test_get_dependency(api, endpoint):
     api.add_public_api = add_api_factory(endpoint)
+    _test_api('/api/v1/core/status', AUTH_HEADERS, status.HTTP_200_OK, 'ok')
 
-    app = make_app()
-    with TestClient(app) as client:
-        response = client.get('/api/v1/core/status', headers=AUTH_HEADERS)
-        assert response.status_code == status.HTTP_200_OK
-        assert response.json() == 'ok'
+
+@pytest.mark.parametrize(
+    'forwarded_for',
+    (
+        '1.1.1.1',
+        '1.1.1.1,2.2.2.2',
+        '1.1.1.1,2.2.2.2,3.3.3.3',
+    ),
+)
+def test_user_id(api, forwarded_for):
+    api.add_public_api = add_api_factory(get_user_ip)
+    headers = {'X-Forwarded-For': forwarded_for, **AUTH_HEADERS}
+    _test_api('/api/v1/core/status', headers, status.HTTP_200_OK, 'ok')
