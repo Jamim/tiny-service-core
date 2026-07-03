@@ -1,11 +1,13 @@
 import asyncio
+import sys
 from unittest.mock import AsyncMock, Mock, patch
 
 from core import settings
-from core.lifespan import lifespan
 
 
 def run_lifespan():
+    from core.lifespan import lifespan
+
     app = Mock()
 
     async def test():
@@ -13,6 +15,8 @@ def run_lifespan():
             pass
 
     asyncio.run(test())
+
+    return app
 
 
 @patch('httpx.AsyncHTTPTransport')
@@ -66,3 +70,19 @@ def test_lifespan_missing_setting():
 
     func.assert_not_called()
     gather.assert_called_once_with()
+
+
+def test_lifespan_app_init_func(app_lifespan):
+    del sys.modules['core.lifespan']
+
+    clean_up = AsyncMock()
+    init_foo = Mock(return_value=clean_up)
+    init_bar = Mock(return_value=None)
+
+    app_lifespan.INIT_FUNCS = [init_foo, init_bar]
+    app = run_lifespan()
+
+    init_foo.assert_called_once_with(app.state)
+    clean_up.assert_called_once_with()
+
+    init_bar.assert_called_once_with(app.state)

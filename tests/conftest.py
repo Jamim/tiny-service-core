@@ -18,6 +18,15 @@ def api():
 def app_config():
     with patch.dict(sys.modules):
         sys.modules['app'] = ModuleType('app')
-        sys.modules['app.config'] = config_module = ModuleType('api')
+        sys.modules['app.config'] = config_module = ModuleType('config')
+
+        yield config_module
+
+
+@pytest.fixture
+def app_lifespan():
+    with patch.dict(sys.modules):
+        sys.modules['app'] = ModuleType('app')
+        sys.modules['app.lifespan'] = config_module = ModuleType('lifespan')
 
         yield config_module

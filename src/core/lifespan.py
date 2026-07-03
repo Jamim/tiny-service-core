@@ -1,14 +1,18 @@
 import asyncio
-from collections.abc import AsyncGenerator, Awaitable, Callable
+from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
-from typing import Any, cast
+from typing import cast
 
 from fastapi import FastAPI
 from starlette.datastructures import State
 
 from . import settings
+from .typing import CleanUpFunc, CoreInitFunc
 
-type CleanUpFunc = Callable[[], Awaitable[None]]
+try:
+    from app.lifespan import INIT_FUNCS as APP_INIT_FUNCS
+except ImportError:
+    APP_INIT_FUNCS = []
 
 
 def init_cache(state: State, cache_url: str) -> CleanUpFunc:
@@ -34,7 +38,7 @@ def init_http_client(state: State, retries: int) -> CleanUpFunc:
     return cast(CleanUpFunc, state.http_client.aclose)
 
 
-INIT_FUNCS: dict[str, Callable[[State, Any], CleanUpFunc]] = {
+INIT_FUNCS: dict[str, CoreInitFunc] = {
     'cache_url': init_cache,
     'db_url': init_db,
     'http_retries': init_http_client,
@@ -49,6 +53,11 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None]:
         value = getattr(settings, attr, None)
         if value:
             clean_up_funcs.append(init_func(app.state, value))
+
+    for app_init_func in APP_INIT_FUNCS:
+        clean_up = app_init_func(app.state)
+        if clean_up:
+            clean_up_funcs.append(clean_up)
 
     yield
 
