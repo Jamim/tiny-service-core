@@ -5,7 +5,7 @@ from unittest.mock import patch
 import pytest
 from fastapi import status
 from fastapi.testclient import TestClient
-from httpx import AsyncClient
+from httpx2 import AsyncClient
 from redis.asyncio.client import Redis
 from sqlalchemy.engine.interfaces import IsolationLevel
 from sqlmodel.ext.asyncio.session import AsyncSession

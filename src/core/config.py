@@ -58,7 +58,7 @@ class HTTPClientSettings(BaseSettings):
 OPTIONAL_SETTINGS: dict[str, type[BaseSettings]] = {
     'redis': CacheSettings,
     'sqlmodel': DBSettings,
-    'httpx': HTTPClientSettings,
+    'httpx2': HTTPClientSettings,
 }
 
 settings_bases = [AppSettings, SentrySettings]

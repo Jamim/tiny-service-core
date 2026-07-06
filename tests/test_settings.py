@@ -60,7 +60,7 @@ def test_settings_db_isolation_level(isolation_level):
     {
         'redis': None,
         'sqlmodel': None,
-        'httpx': None,
+        'httpx2': None,
     },
 )
 def test_config_init_no_optional():

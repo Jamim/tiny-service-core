@@ -1,7 +1,7 @@
 from typing import Annotated, cast
 
 from fastapi import Depends, Request
-from httpx import AsyncClient
+from httpx2 import AsyncClient
 
 
 def get_http_client(request: Request) -> AsyncClient:

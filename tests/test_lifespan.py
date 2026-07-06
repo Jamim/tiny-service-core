@@ -19,15 +19,15 @@ def run_lifespan():
     return app
 
 
-@patch('httpx.AsyncHTTPTransport')
-@patch('httpx.AsyncClient')
+@patch('httpx2.AsyncHTTPTransport')
+@patch('httpx2.AsyncClient')
 @patch('sqlalchemy.ext.asyncio.create_async_engine')
 @patch('redis.asyncio.client.Redis')
 def test_lifespan(
     redis,
     create_async_engine,
-    httpx_client,
-    httpx_transport,
+    httpx2_client,
+    httpx2_transport,
 ):
     gather = AsyncMock()
     with patch('asyncio.gather', gather):
@@ -35,8 +35,8 @@ def test_lifespan(
 
     redis.from_url.assert_called_once_with(settings.cache_url)
     create_async_engine.assert_called_once_with(settings.db_url)
-    httpx_transport.assert_called_once_with(retries=2)
-    httpx_client.assert_called_once_with(transport=httpx_transport())
+    httpx2_transport.assert_called_once_with(retries=2)
+    httpx2_client.assert_called_once_with(transport=httpx2_transport())
 
     cache_aclose = redis.from_url.return_value.aclose
     cache_aclose.assert_called_once_with()
@@ -44,7 +44,7 @@ def test_lifespan(
     dispose = create_async_engine.return_value.dispose
     dispose.assert_called_once_with()
 
-    http_aclose = httpx_client.return_value.aclose
+    http_aclose = httpx2_client.return_value.aclose
     http_aclose.assert_called_once_with()
 
     gather.assert_called_once_with(

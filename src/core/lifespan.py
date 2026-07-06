@@ -34,7 +34,7 @@ def init_db(state: State, db_url: str) -> CleanUpFunc:
 
 
 def init_http_client(state: State, retries: int) -> CleanUpFunc:
-    from httpx import AsyncClient, AsyncHTTPTransport
+    from httpx2 import AsyncClient, AsyncHTTPTransport
 
     state.http_client = AsyncClient(
         transport=AsyncHTTPTransport(retries=retries)

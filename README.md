@@ -50,7 +50,7 @@ Current version glues together these components:
     * [asyncpg][asyncpg]
     * [Alembic][alembic]
   - `http-client`
-    * [HTTPX][httpx]
+    * [HTTPX2][httpx2]
 
 [fastapi]: https://fastapi.tiangolo.com
 [pydantic-settings]: https://docs.pydantic.dev/latest/concepts/pydantic_settings/
@@ -59,6 +59,6 @@ Current version glues together these components:
 [sqlmodel]: https://sqlmodel.tiangolo.com
 [asyncpg]: https://github.com/MagicStack/asyncpg
 [alembic]: https://alembic.sqlalchemy.org
-[httpx]: https://www.python-httpx.org
+[httpx2]: https://httpx2.pydantic.dev
 
 [installing-extras]: https://packaging.python.org/en/latest/tutorials/installing-packages/#installing-extras
