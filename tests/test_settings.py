@@ -1,11 +1,13 @@
 import sys
+from typing import get_args
 from unittest.mock import patch
 
 import pytest
 from pydantic import ValidationError
+from sqlalchemy.engine.interfaces import IsolationLevel
 
 from core import settings
-from core.config import AppSettings
+from core.config import AppSettings, CoreSettings
 
 
 def test_settings():
@@ -27,6 +29,7 @@ def test_settings():
 
     assert settings.cache_url == 'redis://localhost:6379'
     assert settings.db_url == 'postgresql+asyncpg://foo:bar@127.0.0.1/dummy'
+    assert settings.db_isolation_level is None
     assert settings.http_retries == 2
 
 
@@ -43,6 +46,13 @@ def test_slug_validation(key):
 def test_settings_app_client_key_hashes():
     settings = AppSettings()
     assert settings.app_client_key_hashes == ['foo', 'bar']
+
+
+@pytest.mark.parametrize('isolation_level', get_args(IsolationLevel))
+def test_settings_db_isolation_level(isolation_level):
+    with patch.dict('os.environ', {'DB_ISOLATION_LEVEL': isolation_level}):
+        settings = CoreSettings()
+        assert settings.db_isolation_level == isolation_level
 
 
 @patch.dict(

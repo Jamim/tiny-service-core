@@ -41,6 +41,14 @@ class CacheSettings(BaseSettings):
 
 class DBSettings(BaseSettings):
     db_url: str
+    db_isolation_level: Literal[
+        'SERIALIZABLE',
+        'REPEATABLE READ',
+        'READ COMMITTED',
+        'READ UNCOMMITTED',
+        'AUTOCOMMIT',
+        None,
+    ] = None
 
 
 class HTTPClientSettings(BaseSettings):

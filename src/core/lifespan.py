@@ -25,7 +25,11 @@ def init_cache(state: State, cache_url: str) -> CleanUpFunc:
 def init_db(state: State, db_url: str) -> CleanUpFunc:
     from sqlalchemy.ext.asyncio import create_async_engine
 
-    state.db = create_async_engine(db_url)
+    kwargs = {}
+    if settings.db_isolation_level:
+        kwargs['isolation_level'] = settings.db_isolation_level
+
+    state.db = create_async_engine(db_url, **kwargs)
     return cast(CleanUpFunc, state.db.dispose)
 
 

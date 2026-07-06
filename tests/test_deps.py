@@ -1,4 +1,5 @@
 import sys
+from typing import get_args
 from unittest.mock import patch
 
 import pytest
@@ -6,6 +7,7 @@ from fastapi import status
 from fastapi.testclient import TestClient
 from httpx import AsyncClient
 from redis.asyncio.client import Redis
+from sqlalchemy.engine.interfaces import IsolationLevel
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 from core import make_app
@@ -96,6 +98,7 @@ def get_cache(cache: Cache):
 
 def get_session(session: Session):
     assert isinstance(session, AsyncSession)
+    assert session.bind.dialect._on_connect_isolation_level is None
     return 'ok'
 
 
@@ -135,3 +138,22 @@ def test_user_id(api, forwarded_for):
     api.add_public_api = add_api_factory(get_user_ip)
     headers = {'X-Forwarded-For': forwarded_for, **AUTH_HEADERS}
     _test_api('/api/v1/core/status', headers, status.HTTP_200_OK, 'ok')
+
+
+@pytest.mark.parametrize('isolation_level', get_args(IsolationLevel))
+def test_db_isolation_level(api, isolation_level):
+    def get_session(session: Session):
+        assert isinstance(session, AsyncSession)
+        assert (
+            session.bind.dialect._on_connect_isolation_level == isolation_level
+        )
+        return 'ok'
+
+    api.add_public_api = add_api_factory(get_session)
+
+    from core import settings
+
+    with patch.object(settings, 'db_isolation_level', isolation_level):
+        _test_api(
+            '/api/v1/core/status', AUTH_HEADERS, status.HTTP_200_OK, 'ok'
+        )
