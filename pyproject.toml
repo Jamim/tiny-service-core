@@ -6,7 +6,7 @@ description = "🪐 Shared functionality for tiny microservices"
 version = "0.2.0"
 
 readme = "README.md"
-license = { text = "MIT" }
+license = "MIT"
 
 authors = [
     { name = "Aliaksei Urbanski", email = "aliaksei.urbanski@gmail.com" },
@@ -16,7 +16,6 @@ maintainers = [
 ]
 
 classifiers = [
-    "License :: OSI Approved :: MIT License",
     "Development Status :: 4 - Beta",
     "Environment :: Web Environment",
     "Framework :: AsyncIO",
