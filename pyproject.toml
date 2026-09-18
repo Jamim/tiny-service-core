@@ -49,6 +49,7 @@ dependencies = [
 [project.optional-dependencies]
 dev = [
     "fastapi[standard]",
+    "freezegun",
 ]
 cache = [
     "redis",
