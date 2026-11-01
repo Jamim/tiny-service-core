@@ -58,7 +58,7 @@ db = [
     "alembic",
     "asyncpg",
     "sentry-sdk[asyncpg,sqlalchemy]",
-    "sqlmodel",
+    "sqlmodel[asyncio]",
 ]
 http-client = [
     "httpx2",
