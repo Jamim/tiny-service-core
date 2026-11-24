@@ -44,7 +44,7 @@ requires-python = ">=3.12"
 dependencies = [
     "fastapi",
     "pydantic-settings",
-    "sentry-sdk[fastapi]",
+    "sentry-sdk[fastapi]<3",
 ]
 
 [project.optional-dependencies]
